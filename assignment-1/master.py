@@ -16,8 +16,9 @@ def register_worker(worker_name, worker_address):
 def get_worker():
     global workers
     # Balancing the load by selecting the worker with the least load
-    print("here:", len(workers))
-    return min(workers, key=lambda w: workers[w].get_load())
+    option = min(workers, key=lambda w: workers[w].get_load())
+    print("worker chose:", option)
+    return option
 
 def getbyname(name):
     global workers
