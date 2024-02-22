@@ -1,0 +1,15 @@
+# Use Alpine Linux as the base image
+FROM python:3.9-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy worker code to the container
+COPY worker.py .
+COPY data-am.json .
+
+# Expose the port
+EXPOSE 9000
+
+# Command to run the worker server
+CMD ["python", "worker.py", "9000", "am"]

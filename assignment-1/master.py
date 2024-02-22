@@ -8,12 +8,15 @@ workers = {}
 
 def register_worker(worker_name, worker_address):
     global workers
+    print(worker_name, worker_address)
     workers[worker_name] = ServerProxy(worker_address)
     print(f"Worker {worker_name} registered at {worker_address}")
+    return {"message": "success"}
 
 def get_worker():
     global workers
     # Balancing the load by selecting the worker with the least load
+    print("here:", len(workers))
     return min(workers, key=lambda w: workers[w].get_load())
 
 def getbyname(name):

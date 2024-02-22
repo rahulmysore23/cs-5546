@@ -1,7 +1,8 @@
-# Updated worker code with missing functions
+# Updated worker code with registration logic
 from xmlrpc.server import SimpleXMLRPCServer
 import sys
 import json
+import xmlrpc.client
 
 # Storage of data
 data_table = {}
@@ -20,9 +21,18 @@ def load_data(group):
     except json.JSONDecodeError:
         print(f"Error: Failed to decode JSON from file '{filename}'.")
 
+def register_with_master(master_port, worker_name, worker_port):
+    try:
+        with xmlrpc.client.ServerProxy(f"http://localhost:{master_port}/") as master:
+            result = master.register_worker(worker_name, f"http://localhost:{worker_port}/")
+            print(result)
+    except ConnectionRefusedError:
+        print(f"Error: Unable to connect to master at {master_port}.")
+
+
 def get_load():
-    global data_table
-    return len(data_table)
+    global requests_served
+    return requests_served
 
 def getbyname(name):
     global data_table
@@ -55,16 +65,20 @@ def getbyyear(location, year):
     return {'error': False, 'result': matching_records}
 
 def main():
-    if len(sys.argv) < 3:
-        print('Usage: worker.py <port> <group: am or nz>')
+    if len(sys.argv) < 4:
+        print('Usage: worker.py <master_address> <worker_name> <port> <group: am or nz>')
         sys.exit(0)
 
-    port = int(sys.argv[1])
-    group = sys.argv[2]
+    master_port = sys.argv[1]
+    worker_name = sys.argv[2]
+    port = int(sys.argv[3])
+    group = sys.argv[4]
+
     load_data(group)
-    print("Data loaded")
+    register_with_master(master_port, worker_name, port)
+
     server = SimpleXMLRPCServer(("localhost", port))
-    print(f"Worker listening on port {port}...")
+    print(f"Worker {worker_name} listening on port {port}...")
     server.register_function(getbyname, 'getbyname')
     server.register_function(getbylocation, 'getbylocation')
     server.register_function(getbyyear, 'getbyyear')
