@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  master:
+    build:
+      context: .
+      dockerfile: Dockerfile.master
+    ports:
+      - "8000:8000"
+    networks:
+      - rpc_network
+
+  worker-1:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker-1
+    networks:
+      - rpc_network
+    depends_on:
+      - master
+    ports:
+      - "9000:9000"
+
+  worker-2:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker-2
+    networks:
+      - rpc_network
+    depends_on:
+      - master
+    ports:
+      - "9001:9001"
+
+networks:
+  rpc_network:
+    driver: bridge

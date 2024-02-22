@@ -1,0 +1,14 @@
+# Use Alpine Linux as the base image
+FROM python:3.9-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy master code to the container
+COPY master.py .
+
+# Expose the port
+EXPOSE 8000
+
+# Command to run the master server
+CMD ["python", "master.py", "8000"]
