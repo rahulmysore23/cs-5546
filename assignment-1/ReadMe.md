@@ -36,3 +36,18 @@ python3 worker.py 8000 w2-2 23004 nz
 ```bash
 python3 client.py 8000
 ```
+
+## Explanation for commands
+
+1. Master command
+```bash 
+python master.py <port>
+```  
+2. Worker command
+```bash 
+python worker.py <master_port> <worker_name> <worker_port> <worker_group>
+```  
+3. Client command
+```bash 
+python client.py <master_port>
+```  
