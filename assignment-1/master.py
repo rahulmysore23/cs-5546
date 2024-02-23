@@ -14,30 +14,39 @@ def register_worker(worker_name, group, worker_address):
 
 def get_worker(group):
     global workers
-    # Balancing the load by selecting the worker with the least load
-    option = min(workers[group], key=lambda w: workers[group][w].get_load())
-    print("worker chose:", option)
-    return workers[group][option]
+    try:
+        # Balancing the load by selecting the worker with the least load
+        option = min(workers[group], key=lambda w: workers[group][w].get_load())
+        print("worker chose:", option)
+        return workers[group][option]
+    except ValueError:
+        print(f"No workers available in group {group}")
+        return None
 
 def getbyname(name):
     global workers
     print("Get by name called:", name)
     
-    first_letter = name[0].lower()
-    if first_letter >= 'a' and first_letter <= 'm':
-        # Call worker-1 for names starting with A-M
-        worker = get_worker("am")
-    elif first_letter >= 'n' and first_letter <= 'z':
-        # Call worker-2 for names starting with N-Z
-        worker = get_worker("nz")
-    else:
-        return {
-            'error': True,
-            'message': 'Invalid name'
-        }
     try:
+        first_letter = name[0].lower()
+        if first_letter >= 'a' and first_letter <= 'm':
+            # Call worker-1 for names starting with A-M
+            worker = get_worker("am")
+        elif first_letter >= 'n' and first_letter <= 'z':
+            # Call worker-2 for names starting with N-Z
+            worker = get_worker("nz")
+        else:
+            return {
+                'error': True,
+                'message': 'Invalid name'
+            }
+        
+        if worker == None:
+            return {'error': True, 'message': f'{worker} is unavailable'}
+        
         return worker.getbyname(name)
     except ConnectionRefusedError:
+        print(f'{worker} is unavailable')
         return {'error': True, 'message': f'{worker} is unavailable'}
 
 def getbylocation(location):
@@ -45,6 +54,13 @@ def getbylocation(location):
     print("Get by location called:", location)
     worker1 = get_worker("am")
     worker2 = get_worker("nz")
+
+    if worker1 == None:
+        return {'error': True, 'message': f'{worker1} is unavailable'}
+    
+    if worker2 == None:
+        return {'error': True, 'message': f'{worker2} is unavailable'}
+    
     try:
         result_1 = worker1.getbylocation(location)
     except ConnectionRefusedError:
@@ -60,6 +76,13 @@ def getbyyear(location, year):
     print("Get by year called:", year)
     worker1 = get_worker("am")
     worker2 = get_worker("nz")
+
+    if worker1 == None:
+        return {'error': True, 'message': f'{worker1} is unavailable'}
+    
+    if worker2 == None:
+        return {'error': True, 'message': f'{worker2} is unavailable'}
+
     try:
         result_1 = worker1.getbyyear(location, year)
     except ConnectionRefusedError:
