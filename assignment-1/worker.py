@@ -74,10 +74,10 @@ def main():
         print('Usage: worker.py <master_address> <worker_name> <port> <group: am or nz>')
         sys.exit(0)
 
-    master_port = sys.argv[1]
-    worker_name = sys.argv[2]
-    port = int(sys.argv[3])
-    group = sys.argv[4]
+    master_port = sys.argv[1]  # Master server port
+    worker_name = sys.argv[2]  # Worker name
+    port = int(sys.argv[3])  # Worker server port
+    group = sys.argv[4]  # Group name (am or nz)
 
     load_data(group)
     register_with_master(master_port, worker_name, port, group) # Registering with the master server
