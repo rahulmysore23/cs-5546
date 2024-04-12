@@ -20,6 +20,8 @@ services:
       - INFLUXDB_HTTP_AUTH_ENABLED=true
     networks:
       - metrics-network
+    volumes:
+      - influxdb-data:/var/lib/influxdb
 
 networks:
   metrics-network:
